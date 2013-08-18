@@ -1,0 +1,178 @@
+<!DOCTYPE html> 
+<html> 
+	<head> 
+	<title>Duckys Server - Music</title> 
+	<meta name="viewport" content="width=device-width, initial-scale=1"> 
+<link rel="stylesheet" href="http://code.jquery.com/mobile/1.3.2/jquery.mobile-1.3.2.min.css" />
+<script src="http://code.jquery.com/jquery-1.9.1.min.js"></script>
+<script src="http://code.jquery.com/mobile/1.3.2/jquery.mobile-1.3.2.min.js"></script>
+
+<script>
+
+var currentPos;
+var songLength;
+var selected;
+
+function cmd(args) {
+	var xmlHttpReq = false;
+    	xmlHttpReq = new XMLHttpRequest();
+	xmlHttpReq.open('GET', '/cgi-bin/mpc.cgi?comm='+args, true);
+    	xmlHttpReq.send();
+}
+
+function getCurrent() {
+        var xmlHttpReq = false;
+        xmlHttpReq = new XMLHttpRequest();
+        xmlHttpReq.onreadystatechange=function()
+          {
+          if (xmlHttpReq.readyState==4 && xmlHttpReq.status==200)
+                {
+		str = xmlHttpReq.responseText;
+		var songname = xmlHttpReq.responseText.match(/^(.*)\f.*/);
+		var artist = xmlHttpReq.responseText.match(/.*\f(.*)\f.*/);
+		var num = xmlHttpReq.responseText.match(/[0-9]+/g);
+                songLength = parseInt(num[4])*60+parseInt(num[5]);
+                currentPos = parseInt(num[2])*60+parseInt(num[3]);
+		$("#songpos").val(currentPos);
+		$("#songpos")[0].max= songLength;
+
+		document.getElementById('currentSong').innerHTML=songname;
+		$("#volume").val(parseInt(num[7]));
+        $("#songpos").change();
+        $("#volume").change();
+                }
+        }
+
+        xmlHttpReq.open('GET', '/cgi-bin/mpc.cgi?comm=-f "%title%\f%artist%\f"', true);
+        xmlHttpReq.send();
+}
+
+function getPlaylist() {
+	var xmlHttpReq = false;
+        xmlHttpReq = new XMLHttpRequest();
+        xmlHttpReq.onreadystatechange=function()
+	{
+	if (xmlHttpReq.readyState==4 && xmlHttpReq.status==200)
+		{
+		txt = xmlHttpReq.responseText;
+		list = txt.split('\n');
+		$("#playlist").empty();
+		for (x in list) {
+			var data = list[x].split('\f');
+				
+				$("#playlist").append(
+				$('<li>').attr('data-icon',"arror-r").attr('data-iconpos', "right").attr('onclick', "selected = "+data[0]).append(
+        $('<a>').attr('href','#dialog').attr('data-rel', "dialog").append(
+            $('<div>').attr('class', 'tab').append(data[2]+" - "+data[3])
+				
+)));
+		}
+		$("#playlist").listview("refresh");
+		}
+	}
+	xmlHttpReq.open('GET', '/cgi-bin/mpc.cgi?comm=-f "%position%\f%file%\f%artist%\f%title%" playlist', true);
+	xmlHttpReq.send();
+}
+
+function play(args) {
+	cmd("play "+args);
+	getCurrent();
+}
+
+function getInfo() {
+	 $("#songpos").value += 1;
+	if ($("#songpos").value == songLength || str == -1) {
+		setTimeout("getCurrent()", 1500);
+		setTimeout("getPlaylist()", 1500);
+	}
+    $("#songpos").change();
+    $("#volume").change();
+}
+
+
+$(document).bind("pageinit", function(){
+ //$("#volume").slider({ animate: true });
+// $("#volume").siblings('.ui-slider').bind("vmouseup", function(){cmd("volume " + $("#volume").val())});
+ //$("#songpos").siblings('.ui-slider').bind("vmouseup", function(){cmd("seek " +  $("#songpos").val()/ $("#songpos")[0].max*100 + "%")});
+ $(document).bind("vmouseup", function(){cmd("seek " +  $("#songpos").val()/ $("#songpos")[0].max*100 + "%"); cmd("volume " + $("#volume").val())});4
+var int= setInterval("getInfo()", 1000);
+var int= setInterval("getCurrent()", 10000);
+ 
+ 
+});
+
+
+</script>
+</head> 
+<body> 
+<div data-role="page" id='page'>
+	<div data-role="header" data-position='fixed' data-theme='c'>
+		<h1>Duckys Server - Music</h1>
+		<div id='currentSong' style='float: centre'>Song Title - Artist</div>
+        <span id='controls'>
+<input type='button' onclick='cmd("prev"); cmd("play"); getInfo()' value='Prev'></input>
+<input type='button' onclick='location.href="#settings"' value='Settings'></input>
+<input type='button' onclick='location.href="#upload"' value='Upload'></input>
+<input type='button' onclick='cmd("next"); cmd("play"); getInfo()' value='Next'</input>
+</span>
+<input type="range" name="slider" id="songpos" min="0" max="100" style="display: none; width: 100%" data-highlight="true"/>
+	</div><!-- /header -->
+
+
+
+	<div data-role="content">
+        	
+<ul data-role="listview" data-theme="c" data-dividertheme="d" id='playlist'>
+</ul>
+	</div><!-- /content -->
+
+</div><!-- /page -->
+
+<div data-role="page" id="dialog">
+<div data-role="header" data-theme="d">
+<h1>Dialog</h1>
+</div>
+<div data-role="content" data-theme="c" id="the-content">
+<input type=button data-rel="back" onclick="del(selected);location.href='#'" value="Delete Song"></input>
+<input type=button data-rel="back" onclick="play(selected);location.href='#'" value="Play Song"></input>
+<input type=button data-rel="back" onclick="location.href='#'" value="Fix Song Tags"></input>
+<input type=button data-rel="back" onclick="location.href='#'" value="Download">
+<input type=button data-rel="back" onclick="location.href='#'" value="Cancel" data-theme='c'>
+</div>
+</div>
+
+<div data-role="page" id="settings">
+<div data-role="header" data-theme="d">
+<h1>Settings</h1>
+</div>
+<div data-role="content" data-theme="c" id="the-content">
+    <p>Volume</p>
+    <!--div id="volume"></div-->
+    <input type="range" name="slider" id="volume" min="0" max="100" style="display: none"/>
+    <p>Shuffle</p>
+    <select name="shuffle" id="flip-a" data-role="slider">
+        <option value="off">Off</option>
+	    <option value="on">On</option>
+    </select> 
+
+    <input onclick='location.href="#"' data-rel="back" type=button value="Close" data-theme='c'>
+</div>
+</div>
+
+<div data-role="page" id="upload">
+<div data-role="header" data-theme="d">
+<h1>Upload</h1>
+</div>
+<div data-role="content" data-theme="c" id="the-content">
+    <p>Volume</p>
+    <form action='/cgi-bin/music-upload.cgi' method='post' enctype='multipart/form-data'>
+     File(s) to Upload: <input type='file' multiple='' name='file' />
+     <input type='submit' name='Submit' value='Upload File' style='float: right'/>
+   </form>
+
+    <input onclick='location.href="#"' data-rel="back" type=button value="Close" data-theme='c'>
+</div>
+</div>
+
+</body>
+</html>
