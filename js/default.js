@@ -43,7 +43,7 @@ function getPlaylist() {
 				txt = data;
 				list = txt.split('\n');
 				$("#playlist").empty();
-				$.each(list function(val) {
+				$.each(list, function(val) {
 					var data = val.split('\f');
 					$li = $('<li>').attr('data-icon',"arror-r").attr('data-iconpos', "right").attr('onclick', "selected = "+data[0]);
 					$a = $('<a>').attr('href','#dialog').attr('data-rel', "dialog");
