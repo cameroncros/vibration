@@ -5,7 +5,7 @@ var selected;
 
 function cmd(args) {
 	$.getJSON(
-			"/cgi-bin/mpc.cgi",
+			"cgi-bin/mpc.cgi",
 			{'comm':args},
 			function () {
 
@@ -14,7 +14,7 @@ function cmd(args) {
 
 function getCurrent() {
 	$.getJSON(
-			"/cgi-bin/mpc.cgi",
+			"cgi-bin/mpc.cgi",
 			{'comm':'-f "%title%\f%artist%\f"'},
 			function(data)
 			{
@@ -36,14 +36,14 @@ function getCurrent() {
 
 function getPlaylist() {
 	$.getJSON(
-			"/cgi-bin/mpc.cgi",
+			"cgi-bin/mpc.cgi",
 			{'comm':'-f "%position%\f%file%\f%artist%\f%title%" playlist'},
 			function(data)
 			{
 				txt = data;
 				list = txt.split('\n');
 				$("#playlist").empty();
-				$.each(list function(val) {
+				$.each(list, function(val) {
 					var data = val.split('\f');
 					$li = $('<li>').attr('data-icon',"arror-r").attr('data-iconpos', "right").attr('onclick', "selected = "+data[0]);
 					$a = $('<a>').attr('href','#dialog').attr('data-rel', "dialog");
