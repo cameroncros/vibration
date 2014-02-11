@@ -1,106 +1,93 @@
 <!DOCTYPE html>
-<html>
-<head>
-<title>Vibrations</title>
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<link rel="stylesheet"
-	href="http://code.jquery.com/mobile/1.3.2/jquery.mobile-1.3.2.min.css" />
-<link rel="stylesheet" href="css/style.css" />
-<script src="http://code.jquery.com/jquery-1.9.1.min.js"></script>
-<script
-	src="http://code.jquery.com/mobile/1.3.2/jquery.mobile-1.3.2.min.js"></script>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="A web interface to MPD">
+    <meta name="author" content="Cameron Cross">
+    <link rel="shortcut icon" href="../../assets/ico/favicon.ico">
 
-<script src="js/default.js"></script>
-</head>
-<body>
-	<div data-role="page" id='page' class='ui-responsive-panel'>
-		<div data-role="header" data-position='fixed' data-theme='c'>
-			<a data-role='none'>Logo</a>
-			<h1 id='currentSong'>Song Title - Artist</h1>
-			<a data-role='button' href="#settings">Settings</a>
-		</div>
-		<!-- /header -->
+    <title>Vibrations</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="css/sticky-footer-navbar.css" rel="stylesheet">
+
+    <!-- Just for debugging purposes. Don't actually copy this line! -->
+    <!--[if lt IE 9]><script src="../../assets/js/ie8-responsive-file-warning.js"></script><![endif]-->
+
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+      <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+  </head>
+
+  <body>
+
+    <!-- Wrap all page content here -->
+    <div id="wrap">
+
+      <!-- Fixed navbar -->
+      <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+        <div class="container">
+          <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+              <span class="sr-only">Toggle navigation</span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="#">Vibrations</a>
+          </div>
+          <div class="collapse navbar-collapse">
+            <ul class="nav navbar-nav">
+              <li class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Add Music<b class="caret"></b></a>
+                <ul class="dropdown-menu">
+                  <li><a href="#fileupload">Upload</a></li>
+                  <li><a href="#youtubeupload">Youtube</a></li>
+<li><a href="#localfs">Local Filesystem</a></li>
+                </ul>
+              </li>
+            </ul>
+          </div><!--/.nav-collapse -->
+        </div>
+      </div>
+
+      <!-- Begin page content -->
+      <div class="container">
+        <div class="page-header">
+          <h1>Sticky footer with fixed navbar</h1>
+        </div>
+        <p class="lead">Pin a fixed-height footer to the bottom of the viewport in desktop browsers with this custom HTML and CSS. A fixed navbar has been added within <code>#wrap</code> with <code>padding-top: 60px;</code> on the <code>.container</code>.</p>
+        <p>Back to <a href="../sticky-footer">the default sticky footer</a> minus the navbar.</p>
+      </div>
+    </div>
+
+    <div id="footer">
+      <div class="container">
+				<button type="button" class="btn btn-default btn-lg">
+					<span class="glyphicon glyphicon-step-backward"></span>
+				</button>
+				 <button type="button" class="btn btn-default btn-lg">
+					<span class="glyphicon glyphicon-pause"></span>
+				</button>
+<button type="button" class="btn btn-default btn-lg">
+					<span class="glyphicon glyphicon-step-forward"></span>
+				</button>
+      </div>
+    </div>
 
 
-
-		<div data-role="content"></div>
-		<!-- /content -->
-
-		<div data-role='footer'  data-position="fixed">
-			<div class="ui-grid-b">
-				<div class="ui-block-a">
-					<a onclick='cmd("prev"); cmd("play"); getInfo()'
-						data-icon="arrow-l" data-role='button'>Prev</a>
-				</div>
-				<div class="ui-block-b">
-					<a data-role='button' href="#upload">Upload</a>
-				</div>
-				<div class="ui-block-c">
-					<a onclick='cmd("next"); cmd("play"); getInfo()'
-						data-icon="arrow-r" data-role='button' data-iconpos='right'>Next</a>
-				</div>
-			</div>
-		</div>
-
-		<div data-role="panel" id="playlistpanel" data-dismissable="false"
-			data-position="right">
-			<ul data-role="listview" data-theme="c" data-dividertheme="d"
-				data-filter="true" id='playlist'></ul>
-		</div>
-		<div data-role="panel" data-position='left' data-display="overlay"
-			id="settings">
-			<p>Volume</p>
-			<!--div id="volume"></div-->
-			<input type="range" name="slider" id="volume" min="0" max="100"
-				style="display: none" />
-			<p>Shuffle</p>
-			<select name="shuffle" id="flip-a" data-role="slider">
-				<option value="off">Off</option>
-				<option value="on">On</option>
-			</select> <input onclick='location.href="#"' data-rel="back" type=button
-				value="Close" data-theme='c'>
-		</div>
-
-
-
-	</div>
-	<!-- /page -->
-
-	<div data-role="page" id="dialog">
-		<div data-role="header" data-theme="d">
-			<h1>Dialog</h1>
-		</div>
-		<div data-role="content" data-theme="c">
-			<input type=button data-rel="back"
-				onclick="del(selected);location.href='#'" value="Delete Song"></input>
-			<input type=button data-rel="back"
-				onclick="play(selected);location.href='#'" value="Play Song"></input>
-			<input type=button data-rel="back" onclick="location.href='#'"
-				value="Fix Song Tags"></input> <input type=button data-rel="back"
-				onclick="location.href='#'" value="Download"> <input
-				type=button data-rel="back" onclick="location.href='#'"
-				value="Cancel" data-theme='c'>
-		</div>
-	</div>
-
-
-	<div data-role="page" id="upload">
-		<div data-role="header" data-theme="d">
-			<h1>Upload</h1>
-		</div>
-		<div data-role="content" data-theme="c" id="the-content">
-			<p>Volume</p>
-			<form action='/cgi-bin/music-upload.cgi' method='post'
-				enctype='multipart/form-data'>
-				File(s) to Upload: <input type='files' name='file' /> <input
-					type='submit' name='Submit' value='Upload File'
-					style='float: right' />
-			</form>
-
-			<input onclick='location.href="#"' data-rel="back" type=button
-				value="Close" data-theme='c'>
-		</div>
-	</div>
-
-</body>
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.0.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+<script src="js/stickUp.min.js"></script>
+  </body>
 </html>
